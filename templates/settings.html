@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+{% block header_title %}Settings & Preferences{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form action="{{ url_for('settings') }}" method="POST">
+        <div class="space-y-8">
+            
+            <!-- Account Settings -->
+            <div class="card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center">
+                    <i data-lucide="user" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Account Settings</h3>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                            <input type="text" name="username" value="{{ user.username }}" class="block w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                            <input type="email" name="email" value="{{ user.email }}" class="block w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Change Password <span class="text-xs text-gray-500 font-normal">(Leave blank to keep current)</span></label>
+                        <input type="password" name="new_password" placeholder="••••••••" class="block w-full md:w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Preferences -->
+            <div class="card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center">
+                    <i data-lucide="palette" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Theme Preferences</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4 max-w-md">
+                        <label class="relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <input type="radio" name="theme" value="light" class="peer sr-only" {% if user.theme == 'light' %}checked{% endif %}>
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mr-3">
+                                        <i data-lucide="sun" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Light Mode</span>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <input type="radio" name="theme" value="dark" class="peer sr-only" {% if user.theme == 'dark' %}checked{% endif %}>
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-indigo-900/50 text-indigo-400 rounded-full flex items-center justify-center mr-3">
+                                        <i data-lucide="moon" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Dark Mode</span>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Notifications & Dashboard -->
+                <div class="space-y-8">
+                    <!-- Notifications -->
+                    <div class="card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center">
+                            <i data-lucide="bell" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h3>
+                        </div>
+                        <div class="p-6">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Low Stock Alerts</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Show warnings when inventory < 5</p>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" name="alerts_enabled" class="sr-only peer" {% if user.alerts_enabled %}checked{% endif %}>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Dashboard Preferences -->
+                    <div class="card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Dashboard Preferences</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Show Charts</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Display visual analytics</p>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" name="show_charts" class="sr-only peer" {% if user.show_charts %}checked{% endif %}>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                </div>
+                            </label>
+                            
+                            <hr class="border-gray-200 dark:border-gray-700">
+                            
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Show Activity Logs</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Display recent transaction feed</p>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" name="show_logs" class="sr-only peer" {% if user.show_logs %}checked{% endif %}>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory Preferences -->
+                <div class="space-y-8">
+                    <div class="card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center">
+                            <i data-lucide="package" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Inventory Preferences</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Sorting</label>
+                                <select name="default_sort" class="block w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                                    <option value="latest" {% if user.default_sort == 'latest' %}selected{% endif %}>Latest Added</option>
+                                    <option value="name" {% if user.default_sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                                    <option value="quantity_desc" {% if user.default_sort == 'quantity_desc' %}selected{% endif %}>Highest Quantity</option>
+                                    <option value="quantity_asc" {% if user.default_sort == 'quantity_asc' %}selected{% endif %}>Lowest Quantity</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Items Per Page</label>
+                                <select name="items_per_page" class="block w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                                    <option value="5" {% if user.items_per_page == 5 %}selected{% endif %}>5 items</option>
+                                    <option value="10" {% if user.items_per_page == 10 %}selected{% endif %}>10 items</option>
+                                    <option value="20" {% if user.items_per_page == 20 %}selected{% endif %}>20 items</option>
+                                    <option value="50" {% if user.items_per_page == 50 %}selected{% endif %}>50 items</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card-bg rounded-xl shadow-sm border border-red-100 dark:border-red-900/30 overflow-hidden">
+                <div class="px-6 py-4 border-b border-red-100 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10 flex items-center">
+                    <i data-lucide="alert-octagon" class="w-5 h-5 mr-2 text-red-500"></i>
+                    <h3 class="text-lg font-semibold text-red-800 dark:text-red-400">Danger Zone</h3>
+                </div>
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Clear Inventory Data</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Permanently delete all your items, transactions, and logs.</p>
+                        </div>
+                        <button type="button" onclick="confirmClear('user')" class="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded-lg text-sm font-bold transition-colors">
+                            Clear My Data
+                        </button>
+                    </div>
+                    
+                    {% if session.get('role') == 'admin' %}
+                    <hr class="my-6 border-red-100 dark:border-red-900/30">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                        <div>
+                            <p class="font-medium text-red-600 dark:text-red-400">System-Wide Reset</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Delete ALL items and transactions across ALL users.</p>
+                        </div>
+                        <button type="button" onclick="confirmClear('all')" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg text-sm font-bold transition-colors shadow-md">
+                            Reset Entire System
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end pt-4 space-x-4">
+                <a href="{{ url_for('dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">Cancel</a>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center">
+                    <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Preferences
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Clear Data Hidden Form -->
+<form id="clearDataForm" action="{{ url_for('clear_data') }}" method="POST" class="hidden">
+    <input type="hidden" name="target" id="clearTarget">
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmClear(target) {
+        const message = target === 'all' 
+            ? "CRITICAL WARNING: This will delete ALL data for ALL users in the entire system. This action is irreversible. Proceed?"
+            : "Are you sure you want to delete all your inventory data? This action cannot be undone.";
+            
+        if (confirm(message)) {
+            document.getElementById('clearTarget').value = target;
+            document.getElementById('clearDataForm').submit();
+        }
+    }
+</script>
+{% endblock %}

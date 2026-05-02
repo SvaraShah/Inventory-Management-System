@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block header_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active SKUs</p>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ unique_items }}</h3>
+            </div>
+            <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                <i data-lucide="package-search" class="w-6 h-6 text-indigo-600 dark:text-indigo-400"></i>
+            </div>
+        </div>
+        <div class="flex items-center text-xs">
+            <span class="text-gray-500 dark:text-gray-400">Unique items tracked</span>
+        </div>
+    </div>
+    
+    <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Critical Alerts</p>
+                <h3 class="text-2xl font-bold {% if low_stock_count > 0 %}text-red-500 dark:text-red-400{% else %}text-green-500 dark:text-green-400{% endif %} mt-1">{{ low_stock_count }}</h3>
+            </div>
+            <div class="p-3 {% if low_stock_count > 0 %}bg-red-50 dark:bg-red-900/30{% else %}bg-green-50 dark:bg-green-900/30{% endif %} rounded-lg">
+                <i data-lucide="alert-circle" class="w-6 h-6 {% if low_stock_count > 0 %}text-red-500 dark:text-red-400{% else %}text-green-500 dark:text-green-400{% endif %}"></i>
+            </div>
+        </div>
+        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            Stock levels below 5 units
+        </div>
+    </div>
+    
+    <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Top Mover</p>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-1 truncate max-w-[120px]">{{ item_flow_labels[0] if item_flow_labels and item_flow_labels[0] != 'No Data' else 'None' }}</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                <i data-lucide="trending-up" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+            </div>
+        </div>
+        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            Most active item recently
+        </div>
+    </div>
+
+    <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activity Count</p>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ recent_activity|length }}</h3>
+            </div>
+            <div class="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                <i data-lucide="history" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+            </div>
+        </div>
+        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            Transactions in last view
+        </div>
+    </div>
+</div>
+
+<!-- High Impact Insights Panel -->
+<div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-md p-6 mb-8 text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+    <div class="flex items-center mb-4 relative z-10">
+        <i data-lucide="zap" class="w-6 h-6 text-yellow-300 mr-2 fill-current"></i>
+        <h3 class="text-xl font-bold">System Insights</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
+        <div>
+            <p class="text-indigo-200 text-sm font-medium">Stock Trend</p>
+            <div class="flex items-center mt-1">
+                <span class="text-lg font-bold">{{ stock_trend }}</span>
+                {% if stock_trend == 'Increasing' %}<i data-lucide="trending-up" class="w-5 h-5 ml-2 text-green-300"></i>
+                {% elif stock_trend == 'Decreasing' %}<i data-lucide="trending-down" class="w-5 h-5 ml-2 text-red-300"></i>
+                {% else %}<i data-lucide="minus" class="w-5 h-5 ml-2 text-gray-300"></i>{% endif %}
+            </div>
+        </div>
+        <div>
+            <p class="text-indigo-200 text-sm font-medium">Most Used Category</p>
+            <p class="text-lg font-bold mt-1">{{ most_used_category }}</p>
+        </div>
+        <div>
+            <p class="text-indigo-200 text-sm font-medium">Highest Activity</p>
+            <p class="text-lg font-bold mt-1">{{ most_active_user }}</p>
+        </div>
+        <div>
+            <p class="text-indigo-200 text-sm font-medium">Recent Traffic</p>
+            <p class="text-lg font-bold mt-1 flex items-center">
+                {% if recent_spike %}
+                <span class="text-yellow-300">Spike Detected</span> <i data-lucide="activity" class="w-4 h-4 ml-1"></i>
+                {% else %}
+                Normal <i data-lucide="activity" class="w-4 h-4 ml-1 opacity-50"></i>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+{% if session.get('show_charts', True) %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Category Distribution -->
+        <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Stock by Category</h3>
+            <div class="relative h-64">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Stock Movement by Item -->
+        <div class="card-bg p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Top Items Movement (IN vs OUT)</h3>
+            <div class="relative h-64">
+                <canvas id="stockFlowChart"></canvas>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    {% if is_admin %}
+    <div class="lg:col-span-1 card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">User Statistics</h3>
+        </div>
+        <div class="overflow-y-auto max-h-64 space-y-3 pr-2">
+            {% for u in user_stats %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 group">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3 shadow-sm text-xs">
+                        {{ u.username[0]|upper }}
+                    </div>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ u.username }}</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                        Stock: {{ u.total }}
+                    </div>
+                    {% if u.username != 'admin' %}
+                    <button onclick="confirmDeleteUser({{ u.id }}, '{{ u.username }}')" class="text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-1" title="Delete User">
+                        <i data-lucide="user-minus" class="w-4 h-4"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="lg:col-span-1 card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Top Categories</h3>
+        </div>
+        <div class="overflow-y-auto max-h-64 space-y-3 pr-2">
+            {% for cat, count in top_categories %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mr-3 shadow-sm">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ cat }}</span>
+                </div>
+                <div class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                    {{ count }} items
+                </div>
+            </div>
+            {% endfor %}
+            {% if not top_categories %}
+            <p class="text-sm text-gray-500 dark:text-gray-400">No categories found.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if session.get('show_logs', True) %}
+    <div class="lg:col-span-2 card-bg rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Activity Logs</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            {% if recent_activity %}
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800/50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        {% if is_admin %}<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>{% endif %}
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for log in recent_activity %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ log.timestamp.strftime('%b %d, %H:%M') }}</td>
+                        {% if is_admin %}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
+                                {{ log.user.username }}
+                            </span>
+                        </td>
+                        {% endif %}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if 'Add' in log.action %}
+                                <span class="text-green-600 dark:text-green-400 font-medium text-sm flex items-center"><i data-lucide="plus-circle" class="w-4 h-4 mr-1"></i> {{ log.action }}</span>
+                            {% elif 'Stock In' in log.action %}
+                                <span class="text-green-600 dark:text-green-400 font-medium text-sm flex items-center"><i data-lucide="arrow-down" class="w-4 h-4 mr-1"></i> {{ log.action }}</span>
+                            {% elif 'Stock Out' in log.action %}
+                                <span class="text-red-600 dark:text-red-400 font-medium text-sm flex items-center"><i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> {{ log.action }}</span>
+                            {% elif 'Delete' in log.action %}
+                                <span class="text-red-600 dark:text-red-400 font-medium text-sm flex items-center"><i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> {{ log.action }}</span>
+                            {% else %}
+                                <span class="text-gray-600 dark:text-gray-400 font-medium text-sm flex items-center"><i data-lucide="info" class="w-4 h-4 mr-1"></i> {{ log.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-300">{{ log.details }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="py-10 flex flex-col items-center justify-center text-gray-400">
+                    <i data-lucide="clipboard-list" class="w-10 h-10 mb-3 text-gray-300 dark:text-gray-600"></i>
+                    <p class="text-sm">No recent activity logged.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDeleteUser(id, username) {
+        if (confirm(`CRITICAL: Are you sure you want to delete the user '${username}' and ALL their inventory data? This action is permanent.`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/api/user/delete/${id}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% if session.get('show_charts', True) %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const textColor = isDark ? '#9ca3af' : '#4b5563';
+        const gridColor = isDark ? '#374151' : '#e5e7eb';
+        
+        // Category Chart
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        const catLabels = {{ chart_categories|tojson }};
+        const catData = {{ chart_category_data|tojson }};
+        
+        new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catData,
+                    backgroundColor: [
+                        '#4f46e5', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#3b82f6'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: textColor }
+                    }
+                }
+            }
+        });
+        
+        // Flow Chart
+        const flowCtx = document.getElementById('stockFlowChart').getContext('2d');
+        new Chart(flowCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ item_flow_labels|tojson }},
+                datasets: [
+                    {
+                        label: 'Stock IN',
+                        data: {{ item_flow_in|tojson }},
+                        backgroundColor: '#10b981',
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Stock OUT',
+                        data: {{ item_flow_out|tojson }},
+                        backgroundColor: '#ef4444',
+                        borderRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: isDark ? '#374151' : '#f3f4f6'
+                        },
+                        ticks: {
+                            color: isDark ? '#9ca3af' : '#6b7280'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: isDark ? '#9ca3af' : '#6b7280'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: isDark ? '#e5e7eb' : '#374151',
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

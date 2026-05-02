@@ -1,0 +1,53 @@
+/* Custom styling to supplement Tailwind CSS */
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5); /* gray-400 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8); /* gray-500 */
+}
+
+/* Animations for Flash Messages */
+.flash-message {
+    animation: slideIn 0.3s forwards ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Theme Defaults (Light) */
+.theme-bg { background-color: #f3f4f6; } /* gray-100 */
+.header-bg { background-color: #ffffff; }
+.sidebar-bg { background-color: #ffffff; }
+.card-bg { background-color: #ffffff; }
+
+/* Dark Theme Overrides */
+html.dark .theme-bg { background-color: #111827; } /* gray-900 */
+html.dark .header-bg { background-color: #1f2937; } /* gray-800 */
+html.dark .sidebar-bg { background-color: #1f2937; }
+html.dark .card-bg { background-color: #1f2937; }
+
+/* Standard transitions */
+body, .sidebar-bg, .header-bg, .card-bg {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
