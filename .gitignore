@@ -89,11 +89,6 @@ venv.bak/
 *.swo
 *~
 
-# SQLite databases
-*.db
-*.sqlite
-database.db
-
 # OS generated files
 .DS_Store
 .DS_Store?
