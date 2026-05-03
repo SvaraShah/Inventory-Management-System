@@ -23,6 +23,8 @@ class User(db.Model):
     activity_logs = db.relationship('ActivityLog', backref='user', lazy=True, cascade="all, delete-orphan")
 
 class Item(db.Model):
+    # Model for the items in the inventory
+    # Each item has a unique ID, name, brand, price, RAM, quantity, category, image URL, creation date, and user ID
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     brand = db.Column(db.String(50), nullable=True)
